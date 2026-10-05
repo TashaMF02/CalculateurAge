@@ -5,6 +5,8 @@ public class CalculateurViewModel : BaseViewModel
     private string _nom = "";
     private DateTime _dateNaissance = DateTime.Today.AddYears(-20);
     private string _resultat = "";
+    private string _statut = "";
+    private string _anniversaire = "";
     private bool _resultatVisible;
 
     public string Nom
@@ -29,6 +31,18 @@ public class CalculateurViewModel : BaseViewModel
         set => SetField(ref _resultat, value);
     }
 
+    public string Statut
+    {
+        get => _statut;
+        set => SetField(ref _statut, value);
+    }
+
+    public string Anniversaire
+    {
+        get => _anniversaire;
+        set => SetField(ref _anniversaire, value);
+    }
+
     public bool ResultatVisible
     {
         get => _resultatVisible;
@@ -36,12 +50,14 @@ public class CalculateurViewModel : BaseViewModel
     }
 
     public RelayCommand CalculerCommand { get; }
+    public RelayCommand EffacerCommand { get; }
 
     public CalculateurViewModel()
     {
         CalculerCommand = new RelayCommand(
             Calculer,
             () => !string.IsNullOrWhiteSpace(Nom));
+        EffacerCommand = new RelayCommand(Effacer);
     }
 
     private void Calculer()
@@ -50,6 +66,22 @@ public class CalculateurViewModel : BaseViewModel
         if (DateNaissance.Date > DateTime.Today.AddYears(-age)) age--;
 
         Resultat = $"{Nom}, vous avez {age} ans";
+        Statut = age >= 18 ? "Majeur" : "Mineur";
+
+        DateTime prochain = DateNaissance.Date.AddYears(age + 1);
+        int jours = (prochain - DateTime.Today).Days;
+        Anniversaire = $"Prochain anniversaire dans {jours} jours";
+
         ResultatVisible = true;
+    }
+
+    private void Effacer()
+    {
+        Nom = "";
+        DateNaissance = DateTime.Today.AddYears(-20);
+        Resultat = "";
+        Statut = "";
+        Anniversaire = "";
+        ResultatVisible = false;
     }
 }
